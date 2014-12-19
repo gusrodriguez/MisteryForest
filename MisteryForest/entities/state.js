@@ -1,7 +1,7 @@
 ﻿//Estado del juego
 var player = {
-    pos: [0, 0],
-    sprite: new Sprite('img/sprites.png', [0, 0], [39, 39], 16, [0, 1])
+    pos: [64, 64],
+    sprite: new Sprite('resources/sprites/hero-sprite-walking.png', [0, 0], [64, 64], 16, [0, 1, 2, 3, 4, 5, 6, 7])
 };
 
 var bullets = [];

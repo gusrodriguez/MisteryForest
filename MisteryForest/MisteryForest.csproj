@@ -132,17 +132,21 @@
     <Content Include="app.js" />
     <Content Include="entities\scene.js" />
     <Content Include="entities\state.js" />
+    <Content Include="externalTools\tiled-0.10.2-win32-setup.exe" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="input.js" />
+    <Content Include="resources.js" />
     <Content Include="resources\maps\level1-tilemap.json" />
     <Content Include="resources\maps\level1-tilemap.tmx" />
+    <Content Include="externalTools\TileStudio.rar" />
     <None Include="thirdParty\jquery-1.7.1.intellisense.js" />
     <Content Include="resources\maps\level1-tileset.png" />
-    <Content Include="resources\sprites\hero-sprite.png" />
+    <Content Include="resources\sprites\hero-sprite-all.png" />
+    <Content Include="resources\sprites\hero-sprite-walking.png" />
     <Content Include="thirdParty\jquery-1.7.1.js" />
     <Content Include="thirdParty\jquery-1.7.1.min.js" />
     <Content Include="entities\sprite.js" />
-    <Content Include="externalTools\tiled-0.10.2-win32-setup.exe" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

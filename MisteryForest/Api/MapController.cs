@@ -35,11 +35,11 @@ namespace MisteryForest.Api
 
             var jsonString = sr.ReadToEnd();
 
-            var response = Request.CreateResponse(HttpStatusCode.OK, jsonString);
+            sr.Close();
+
+            var response = Request.CreateResponse(HttpStatusCode.OK);
 
             response.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-            sr.Close();
  
             return response;
         }
