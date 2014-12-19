@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Configuration;
 
 namespace MisteryForest.Api
 {
@@ -28,7 +29,7 @@ namespace MisteryForest.Api
         // POST api/map
         public HttpResponseMessage Post([FromBody]string value)
         {
-            var path = @"C:\Projects\MisteryForest\MisteryForest\MisteryForest\maps\level1-tilemap.json";
+            var path = ConfigurationManager.AppSettings["resourcesFolder"] + @"\maps\level1-tilemap.json";
 
             var sr = new StreamReader(path);
 
