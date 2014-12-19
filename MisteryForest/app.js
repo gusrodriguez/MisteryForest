@@ -71,6 +71,53 @@ function render() {
     //}
 };
 
+function updateEntities(dt) {
+    // Update the player sprite animation
+    player.sprite.update(dt);
+
+    //// Update all the bullets
+    //for(var i=0; i<bullets.length; i++) {
+    //    var bullet = bullets[i];
+
+    //    switch(bullet.dir) {
+    //        case 'up': bullet.pos[1] -= bulletSpeed * dt; break;
+    //        case 'down': bullet.pos[1] += bulletSpeed * dt; break;
+    //        default:
+    //            bullet.pos[0] += bulletSpeed * dt;
+    //    }
+
+    //    // Remove the bullet if it goes offscreen
+    //    if(bullet.pos[1] < 0 || bullet.pos[1] > canvas.height ||
+    //       bullet.pos[0] > canvas.width) {
+    //        bullets.splice(i, 1);
+    //        i--;
+    //    }
+    //}
+
+    //// Update all the enemies
+    //for(var i=0; i<enemies.length; i++) {
+    //    enemies[i].pos[0] -= enemySpeed * dt;
+    //    enemies[i].sprite.update(dt);
+
+    //    // Remove if offscreen
+    //    if(enemies[i].pos[0] + enemies[i].sprite.size[0] < 0) {
+    //        enemies.splice(i, 1);
+    //        i--;
+    //    }
+    //}
+
+    //// Update all the explosions
+    //for(var i=0; i<explosions.length; i++) {
+    //    explosions[i].sprite.update(dt);
+
+    //    // Remove if animation is done
+    //    if(explosions[i].sprite.done) {
+    //        explosions.splice(i, 1);
+    //        i--;
+    //    }
+    //}
+}
+
 function renderEntity(entity) {
     ctx.save();
     ctx.translate(entity.pos[0], entity.pos[1]);
@@ -79,7 +126,42 @@ function renderEntity(entity) {
 }
 
 function handleInput(dt) {
+    
     if (input.isDown('RIGHT') || input.isDown('d')) {
         player.pos[0] += playerSpeed * dt;
+        updateEntities(dt)
     }
+
+    //if (input.isDown('UP') || input.isDown('w')) {
+    //    player.pos[1] -= playerSpeed * dt;
+    //}
+
+    //if (input.isDown('LEFT') || input.isDown('a')) {
+    //    player.pos[0] -= playerSpeed * dt;
+    //}
+
+    //if (input.isDown('SPACE') &&
+    //    !isGameOver &&
+    //    Date.now() - lastFire > 100) {
+    //    var x = player.pos[0] + player.sprite.size[0] / 2;
+    //    var y = player.pos[1] + player.sprite.size[1] / 2;
+
+    //    bullets.push({
+    //        pos: [x, y],
+    //        dir: 'forward',
+    //        sprite: new Sprite('img/sprites.png', [0, 39], [18, 8])
+    //    });
+    //    bullets.push({
+    //        pos: [x, y],
+    //        dir: 'up',
+    //        sprite: new Sprite('img/sprites.png', [0, 50], [9, 5])
+    //    });
+    //    bullets.push({
+    //        pos: [x, y],
+    //        dir: 'down',
+    //        sprite: new Sprite('img/sprites.png', [0, 60], [9, 5])
+    //    });
+
+    //    lastFire = Date.now();
+    //}
 }
