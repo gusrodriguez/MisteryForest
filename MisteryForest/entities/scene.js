@@ -41,9 +41,12 @@
         layers = $.isArray(layers) ? layers : this.data.layers;
         layers.forEach(this.renderLayer);
     },
+    refresh: function () {
+        scene.layers.forEach(this.renderLayer);
+    },
     loadTileset: function (json) {
         this.data = json;
-        this.tileset = $("<img />", { src: json.tilesets[0].image })[0]
+        this.tileset = $("<img />", { src: json.tilesets[0].image })[0];
         this.tileset.onload = $.proxy(this.renderLayers, this);
     },
     load: function (name) {

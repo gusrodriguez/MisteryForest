@@ -61,7 +61,8 @@ function render() {
     //ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     //Redibuja la escena completa
-    scene.load("level1-map");
+    //scene.load("level1-map");
+    scene.refresh();
 
     renderEntity(player);
 
@@ -71,8 +72,10 @@ function render() {
     //}
 };
 
-function updateEntities(dt) {
+function updateEntities(dt, previousPositionX, previousPositionY) {
     // Update the player sprite animation
+    player.sprite.previousPosition(0, previousPositionX);
+    player.sprite.previousPosition(1, previousPositionY);
     player.sprite.update(dt);
 
     //// Update all the bullets
@@ -121,24 +124,27 @@ function updateEntities(dt) {
 function renderEntity(entity) {
     ctx.save();
     ctx.translate(entity.pos[0], entity.pos[1]);
+    //ctx.rotate(-180 + Math.PI / 2.0);
     entity.sprite.render(ctx);
     ctx.restore();
 }
 
 function handleInput(dt) {
     
-    if (input.isDown('RIGHT') || input.isDown('d')) {
+    if (input.isDown('RIGHT')) { // || input.isDown('d')) {
+        var previousPositionX = player.pos[0];
+        var previousPositionY = player.pos[1];
         player.pos[0] += playerSpeed * dt;
-        updateEntities(dt)
+        updateEntities(dt, previousPositionX, previousPositionY);
     }
 
     //if (input.isDown('UP') || input.isDown('w')) {
     //    player.pos[1] -= playerSpeed * dt;
     //}
 
-    //if (input.isDown('LEFT') || input.isDown('a')) {
-    //    player.pos[0] -= playerSpeed * dt;
-    //}
+    if (input.isDown('LEFT') || input.isDown('a')) {
+        player.pos[0] -= playerSpeed * dt;
+    }
 
     //if (input.isDown('SPACE') &&
     //    !isGameOver &&
