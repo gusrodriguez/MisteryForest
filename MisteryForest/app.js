@@ -1,33 +1,63 @@
-﻿//Creacion del canvas
+﻿//Cross browser requestAnimationFrame
+
+var requestAnimFrame = (function () {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+        };
+})();
+
+//Canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
 canvas.width = 640;
 canvas.height = 480;
 document.body.appendChild(canvas);
 
+//Velocidades de las entidades
 var playerSpeed = 200;
 var bulletSpeed = 500;
 var enemySpeed = 100;
 
+//Entidades múltiples
+var bullets = [];
+var enemies = [];
+var explosions = [];
+
+//Estado general
+var lastFire = Date.now();
+var gameTime = 0;
+var isGameOver;
+var backgroundPattern;
+
 //Carga los recursos en cache
 resources.load([
     'resources/maps/level1-tileset.png',
-    'resources/sprites/hero-sprite-walking.png'
+    'resources/sprites/hero-sprite-walking.png',
+    'resources/maps/level1-map.png'
 ]);
+
+//Jugador principal
+var player = {
+    pos: [64, 64],
+    sprite: new Sprite('resources/sprites/hero-sprite-walking.png', [0, 0], [64, 64], 16, [0, 1, 2, 3, 4, 5, 6, 7])
+};
 
 //Para que el objeto Sprite dibuje sobre el canvas, es necesario cargar primero todas las imagenes antes de comenzar con el bucle principal
 resources.onReady(init);
-
-//$(function () {
-//    init();
-//});
 
 //Inicializacion: Dibujo de la escena.
 function init() {
 
     lastTime = Date.now();
+    
+    backgroundPattern = ctx.createPattern(resources.get('resources/maps/level1-map.png'), 'no-repeat');
 
-    scene.load("level1-map");
+    //scene.load("level1-map");
 
     main();
 }
@@ -46,24 +76,25 @@ function main() {
 
     lastTime = now;
 
-    requestAnimationFrame(main);
+    requestAnimFrame(main);
 };
 
 function update(dt) {
+
     //gameTime += dt;
 
     handleInput(dt);
 };
 
-// Draw everything
+// Dibuja
 function render() {
-    //ctx.fillStyle = terrainPattern;
-    //ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    //Redibuja la escena completa
-    //scene.load("level1-map");
-    scene.refresh();
-
+   
+    //Redibuja la escena completa en cada frame
+    //El redibujo es un fillRect con el fillstyle que representa la imagen de fondo
+    ctx.fillStyle = backgroundPattern;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+   
+    //Redibuja la entidad
     renderEntity(player);
 
     // Render the player if the game isn't over
@@ -72,10 +103,9 @@ function render() {
     //}
 };
 
-function updateEntities(dt, previousPositionX, previousPositionY) {
-    // Update the player sprite animation
-    player.sprite.previousPosition(0, previousPositionX);
-    player.sprite.previousPosition(1, previousPositionY);
+// Actualiza el estado de todas las entidades
+function updateEntities(dt) {
+    
     player.sprite.update(dt);
 
     //// Update all the bullets
@@ -129,13 +159,12 @@ function renderEntity(entity) {
     ctx.restore();
 }
 
+//Controller para los input
 function handleInput(dt) {
     
     if (input.isDown('RIGHT')) { // || input.isDown('d')) {
-        var previousPositionX = player.pos[0];
-        var previousPositionY = player.pos[1];
         player.pos[0] += playerSpeed * dt;
-        updateEntities(dt, previousPositionX, previousPositionY);
+        updateEntities(dt);
     }
 
     //if (input.isDown('UP') || input.isDown('w')) {

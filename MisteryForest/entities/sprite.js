@@ -8,15 +8,9 @@
         this.url = url;
         this.dir = dir || 'horizontal';
         this.once = once;
-        this.previousPos = [];
     };
 
     Sprite.prototype = {
-        
-        previousPosition: function (index, value) {
-            this.previousPos[index] = value;
-        },
-
         update: function (dt) {
             this._index += this.speed * dt;
         },
@@ -47,12 +41,6 @@
             }
             else {
                 x += frame * this.size[0];
-            }
-            
-            //Borra el frame anterior
-            if (this.previousPos != null) {
-                ctx.fillStyle = "#000000";;
-                ctx.fillRect(this.previousPos[0], this.previousPos[1], 32, 32);
             }
 
             //Dibuja el nuevo frame

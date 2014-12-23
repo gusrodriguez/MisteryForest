@@ -41,18 +41,26 @@
         layers = $.isArray(layers) ? layers : this.data.layers;
         layers.forEach(this.renderLayer);
     },
-    refresh: function () {
-        scene.layers.forEach(this.renderLayer);
-    },
     loadTileset: function (json) {
         this.data = json;
         this.tileset = $("<img />", { src: json.tilesets[0].image })[0];
         this.tileset.onload = $.proxy(this.renderLayers, this);
     },
     load: function (name) {
-        return $.ajax({
-            url: "/Api/Map",
-            type: "POST"
-        }).done($.proxy(this.loadTileset, this));
+        
+        //Si el tileset no se cargó, lo va a buscar al servidor.
+        if (scene.tilesetInfo === undefined) {
+            return $.ajax({
+                url: "/Api/Map",
+                type: "POST"
+            }).done(function(json) {
+                scene.tilesetInfo = json;
+                $.proxy(this.loadTileset, this);
+            });
+        } else {
+            //Si el tileset está cacheado, redibuja la escena con la información en memoria
+            scene.data = scene.tilesetInfo;
+            scene.renderLayers(scene.layers);
+        }
     }
 };
