@@ -17,6 +17,9 @@ var ctx = canvas.getContext("2d");
 canvas.width = 640;
 canvas.height = 480;
 document.body.appendChild(canvas);
+var tileSize = 32;
+var amountTilesHorizontal = 20;
+var amountTilesVertical = 15;
 
 //Velocidades de las entidades
 var playerSpeed = 200;
@@ -41,10 +44,16 @@ resources.load([
     'resources/maps/level1-map.png'
 ]);
 
+var playerSizeX = 64;
+var playerSizeY = 64;
+
+var initialPlayerPositionX = 0;
+var initialPlayerPositionY = 0;
+
 //Jugador principal
 var player = {
-    pos: [64, 64],
-    sprite: new Sprite('resources/sprites/hero-sprite-walking.png', [0, 0], [64, 64], 16, [0, 1, 2, 3, 4, 5, 6, 7])
+    pos: [initialPlayerPositionX, initialPlayerPositionY],
+    sprite: new Sprite('resources/sprites/hero-sprite-walking.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7])
 };
 
 //Para que el objeto Sprite dibuje sobre el canvas, es necesario cargar primero todas las imagenes antes de comenzar con el bucle principal
@@ -57,7 +66,7 @@ function init() {
     
     backgroundPattern = ctx.createPattern(resources.get('resources/maps/level1-map.png'), 'no-repeat');
 
-    //scene.load("level1-map");
+    scene.load("level1-map");
 
     main();
 }
@@ -84,7 +93,133 @@ function update(dt) {
     //gameTime += dt;
 
     handleInput(dt);
+
+    checkCollisions();
 };
+
+function checkCollisions() {
+
+    checkPlayerBounds();
+    
+    if (scene.tilesetInfo !== undefined) 
+    {
+        var wallBlocks = scene.tilesetInfo.layers[1].data;
+
+        for (var i = 0; i < wallBlocks.length; i++)
+        {
+            //Si hay un bloque colisionable
+            if (wallBlocks[i] != 0) {
+
+                var blockPosition = [];
+                var blockSize = [];
+                var playerSize = [];
+
+                blockPosition = CalculateTilePositionByIndex(i);
+                
+                blockSize[0] = tileSize;
+                blockSize[1] = tileSize;
+                
+                playerSize[0] = playerSizeX;
+                playerSize[1] = playerSizeY;
+
+                if (boxCollides(blockPosition, blockSize, player.pos, playerSize)) {
+                    player.pos[0] = 0;
+                    player.pos[1] = 0;
+                }
+            }
+        }
+    }
+
+
+//// Run collision detection for all enemies and bullets
+    //for (var i = 0; i < enemies.length; i++) {
+    //    var pos = enemies[i].pos;
+    //    var size = enemies[i].sprite.size;
+
+    //    for (var j = 0; j < bullets.length; j++) {
+    //        var pos2 = bullets[j].pos;
+    //        var size2 = bullets[j].sprite.size;
+
+    //        if (boxCollides(pos, size, pos2, size2)) {
+    //            // Remove the enemy
+    //            enemies.splice(i, 1);
+    //            i--;
+
+    //            // Add score
+    //            score += 100;
+
+    //            // Add an explosion
+    //            explosions.push({
+    //                pos: pos,
+    //                sprite: new Sprite('img/sprites.png',
+    //                                   [0, 117],
+    //                                   [39, 39],
+    //                                   16,
+    //                                   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    //                                   null,
+    //                                   true)
+    //            });
+
+    //            // Remove the bullet and stop this iteration
+    //            bullets.splice(j, 1);
+    //            break;
+    //        }
+    //    }
+
+    //    if (boxCollides(pos, size, player.pos, player.sprite.size)) {
+    //        gameOver();
+    //    }
+    //}
+}
+
+//Calcula la posicion del Tile (extremo superior izquierdo) dado su índice en la matriz del mapa.
+function CalculateTilePositionByIndex(index) {
+
+    var blockPosition = [];
+
+    //Ubica la fila en la matriz de bloques
+    var row = Math.floor(index / amountTilesHorizontal);
+    var column = index - (2 * row * 10);
+
+    //Toma el punto que representa la esquina superior izquierda del Tile colisionable en curso
+    var posYColisionableTile = row * tileSize;
+    var posXColisionableTile = column * tileSize;
+
+    blockPosition[0] = posXColisionableTile;
+    blockPosition[1] = posYColisionableTile;
+
+    return blockPosition;
+}
+
+function boxCollides(pos, size, pos2, size2) {
+    return collides(pos[0], pos[1],
+                    pos[0] + size[0], pos[1] + size[1],
+                    pos2[0], pos2[1],
+                    pos2[0] + size2[0], pos2[1] + size2[1]);
+}
+
+function collides(x, y, r, b, x2, y2, r2, b2) {
+    return !(r <= x2 || x > r2 ||
+             b <= y2 || y > b2);
+}
+
+//Mantiene al jugador dentro del canvas
+function checkPlayerBounds() {
+    // Check bounds
+    if (player.pos[0] < 0) {
+        player.pos[0] = 0;
+    }
+    else if (player.pos[0] > canvas.width - player.sprite.size[0]) {
+        player.pos[0] = canvas.width - player.sprite.size[0];
+    }
+
+    if (player.pos[1] < 0) {
+        player.pos[1] = 0;
+    }
+    else if (player.pos[1] > canvas.height - player.sprite.size[1]) {
+        player.pos[1] = canvas.height - player.sprite.size[1];
+    }
+}
 
 // Dibuja
 function render() {
@@ -167,9 +302,13 @@ function handleInput(dt) {
         updateEntities(dt);
     }
 
-    //if (input.isDown('UP') || input.isDown('w')) {
-    //    player.pos[1] -= playerSpeed * dt;
-    //}
+    if (input.isDown('UP') || input.isDown('w')) {
+        player.pos[1] -= playerSpeed * dt;
+    }
+    
+    if (input.isDown('DOWN') || input.isDown('w')) {
+        player.pos[1] += playerSpeed * dt;
+    }
 
     if (input.isDown('LEFT') || input.isDown('a')) {
         player.pos[0] -= playerSpeed * dt;
