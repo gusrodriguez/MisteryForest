@@ -37,8 +37,22 @@
     });
 
     window.input = {
-        isDown: function (key) {
+        isDown: function(key) {
             return pressedKeys[key.toUpperCase()];
+        },
+        anyKeyPressed: function () {
+            
+            var any = false;
+
+            var pressed = $.grep(pressedKeys, function (n, i) {
+                return n == true;
+            });
+
+            if (pressed.length > 0) {
+                any = true;
+            }
+
+            return any;
         }
-    };
+};
 })();

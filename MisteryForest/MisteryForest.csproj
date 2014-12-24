@@ -136,7 +136,9 @@
     <Content Include="Global.asax" />
     <Content Include="input.js" />
     <Content Include="resources.js" />
+    <Content Include="resources\maps\level1-map-grid.png" />
     <Content Include="resources\maps\level1-map.png" />
+    <Content Include="resources\maps\level1-map-nobackground.png" />
     <Content Include="resources\maps\level1-tilemap.json" />
     <Content Include="resources\maps\level1-tilemap.tmx" />
     <Content Include="externalTools\TileStudio.rar" />
