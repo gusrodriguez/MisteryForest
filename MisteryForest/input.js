@@ -26,10 +26,12 @@
 
     document.addEventListener('keydown', function (e) {
         setKey(e, true);
+        e.preventDefault();
     });
 
     document.addEventListener('keyup', function (e) {
         setKey(e, false);
+        e.preventDefault();
     });
 
     window.addEventListener('blur', function () {
@@ -50,7 +52,10 @@
 
             if (pressed.length > 0) {
                 any = true;
+                console.log("oo");
             }
+
+            console.log("uu");
 
             return any;
         }

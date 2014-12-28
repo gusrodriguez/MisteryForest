@@ -54,6 +54,7 @@ var initialPlayerPositionY = 0;
 //Jugador principal
 var player = {
     pos: [initialPlayerPositionX, initialPlayerPositionY],
+    isColliding: false,
     previousPos: [], //Una foto de la posición inmediata anterior para resolver las colisiones
     sprite: new Sprite('resources/sprites/hero-sprite-walking.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7])
 };
@@ -95,11 +96,11 @@ function update(dt) {
     //gameTime += dt;
 
     handleInput(dt);
-
-    checkCollisions();
 };
 
-function checkCollisions() {
+function checkCollisions(newPosition) {
+    
+    var collides = false;
 
     checkPlayerBounds();
     
@@ -125,13 +126,14 @@ function checkCollisions() {
                 playerSize[0] = playerSizeX;
                 playerSize[1] = playerSizeY;
                 
-                if (boxCollides(blockPosition, blockSize, player.pos, playerSize)) {
-                    player.pos[0] = player.previousPos[0];
-                    player.pos[1] = player.previousPos[1];
+                if (boxCollides(blockPosition, blockSize, newPosition, playerSize)) {
+                    collides = true;
                 }
             }
         }
     }
+
+    return collides;
 
 
 //// Run collision detection for all enemies and bullets
@@ -195,6 +197,14 @@ function CalculateTilePositionByIndex(index) {
 }
 
 function boxCollides(pos, size, pos2, size2) {
+
+    if (collides(pos[0], pos[1],
+        pos[0] + size[0], pos[1] + size[1],
+        pos2[0], pos2[1],
+        pos2[0] + size2[0], pos2[1] + size2[1])) {
+        console.log("colision");
+    }
+
     return collides(pos[0], pos[1],
                     pos[0] + size[0], pos[1] + size[1],
                     pos2[0], pos2[1],
@@ -303,31 +313,44 @@ function StorePreviousPosition(player) {
 
 //Controller para los input
 function handleInput(dt) {
-    
+  
     if (input.isDown('RIGHT')) { // || input.isDown('d')) {
-        StorePreviousPosition(player);
         
-        if (!input.anyKeyPressed()) {
-            player.pos[0] += playerSpeed * dt;
+        StorePreviousPosition(player);
+
+        player.pos[0] += playerSpeed * dt;
+
+        if (checkCollisions(player.pos)) {
+            player.pos[0] = player.previousPos[0];
+            player.pos[1] = player.previousPos[1];
         }
+       
         updateEntities(dt);
     }
 
     if (input.isDown('UP') || input.isDown('w')) {
+        
         StorePreviousPosition(player);
 
-        if (!input.anyKeyPressed()) {
-            player.pos[1] -= playerSpeed * dt;
+        player.pos[1] -= playerSpeed * dt;
+        
+        if (checkCollisions(player.pos)) {
+            player.pos[0] = player.previousPos[0];
+            player.pos[1] = player.previousPos[1];
         }
         
         updateEntities(dt);
     }
     
     if (input.isDown('DOWN') || input.isDown('w')) {
+        
         StorePreviousPosition(player);
-
-        if (!input.anyKeyPressed()) {
-            player.pos[1] += playerSpeed * dt;
+        
+        player.pos[1] += playerSpeed * dt;
+        
+        if (checkCollisions(player.pos)) {
+            player.pos[0] = player.previousPos[0];
+            player.pos[1] = player.previousPos[1];
         }
         
         updateEntities(dt);
@@ -336,8 +359,11 @@ function handleInput(dt) {
     if (input.isDown('LEFT') || input.isDown('a')) {
         StorePreviousPosition(player);
 
-        if (!input.anyKeyPressed()) {
-            player.pos[0] -= playerSpeed * dt;
+        player.pos[0] -= playerSpeed * dt;
+        
+        if (checkCollisions(player.pos)) {
+            player.pos[0] = player.previousPos[0];
+            player.pos[1] = player.previousPos[1];
         }
         
         updateEntities(dt);
