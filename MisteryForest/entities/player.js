@@ -15,7 +15,7 @@ var player = {
 
     previousPosition: [], 
 
-    sprite: new Sprite('resources/sprites/hero-sprite-walking.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7]),
+    sprite: new Sprite('resources/sprites/hero-sprite-walking-right.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7]),
     
     //Mantiene al jugador dentro del canvas
     keepInsideCanvas: function () {

@@ -38,13 +38,15 @@ var isGameOver;
 var backgroundPattern;
 
 var tilesetUrl = 'resources/maps/level1-tileset.png';
-var playerSpriteUrl = 'resources/sprites/hero-sprite-walking.png';
+var playerSpriteUrlRight = 'resources/sprites/hero-sprite-walking-right.png';
+var playerSpriteUrlLeft = 'resources/sprites/hero-sprite-walking-left.png';
 var stage1Url = 'resources/maps/level1-map.png';
 
 //Carga los recursos
 resources.load([
     tilesetUrl,
-    playerSpriteUrl,
+    playerSpriteUrlRight,
+    playerSpriteUrlLeft,
     stage1Url
 ]);
 
@@ -94,7 +96,9 @@ function update(dt) {
 function handleInput(dt) {
     
     //Se registra el input
-    if (input.isDown('RIGHT')) { 
+    if (input.isDown('RIGHT')) {
+
+        player.sprite.changeUrl(playerSpriteUrlRight);
 
         //Se almacena la posicion anterior
         player.savePreviousPosition();
@@ -108,7 +112,7 @@ function handleInput(dt) {
             //Si hubo colisión, se restaura la posición inmediata anterior para redibujar al personaje detenido ante la colisión
             player.restorePreviousPosition();
         }
-       
+        
         scene.updateEntities(dt, player);
     }
 
@@ -126,7 +130,7 @@ function handleInput(dt) {
     }
     
     if (input.isDown('DOWN')) {
-
+        
         player.savePreviousPosition();
 
         player.moveDown(dt);
@@ -139,6 +143,8 @@ function handleInput(dt) {
     }
 
     if (input.isDown('LEFT')) {
+        
+        player.sprite.changeUrl(playerSpriteUrlLeft);
 
         player.savePreviousPosition();
 
@@ -148,7 +154,7 @@ function handleInput(dt) {
             player.restorePreviousPosition();
         }
         
-        scene.updateEntities(dt, player);
+       scene.updateEntities(dt, player);
     }
 
     //if (input.isDown('SPACE') &&

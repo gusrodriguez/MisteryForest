@@ -148,7 +148,8 @@
     <Content Include="resources\maps\level1-tileset.png" />
     <Content Include="resources\sprites\hero-sprite-all.png" />
     <Content Include="resources\sprites\hero-sprite-walking-grid.png" />
-    <Content Include="resources\sprites\hero-sprite-walking.png" />
+    <Content Include="resources\sprites\hero-sprite-walking-left.png" />
+    <Content Include="resources\sprites\hero-sprite-walking-right.png" />
     <Content Include="resources\sprites\hero-sprite.png" />
     <Content Include="thirdParty\jquery-1.7.1.js" />
     <Content Include="thirdParty\jquery-1.7.1.min.js" />

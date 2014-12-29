@@ -13,6 +13,10 @@
 
     Sprite.prototype = {
         
+        changeUrl: function(newUrl) {
+            this.url = newUrl;
+        },
+
         update: function (dt) {
             this._index += this.speed * dt;
         },
