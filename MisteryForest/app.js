@@ -89,7 +89,15 @@ function update(dt) {
 
     //gameTime += dt;
 
+    //Si el personaje está detenido, no ejecuta la animación
+    player.sprite.animate(false);
+
+    //Aplica gravedad
+    scene.applyGravity(dt, player);
+    
     handleInput(dt);
+    
+    scene.updateEntities(dt, player);
  };
 
 //Controller para los input
@@ -98,22 +106,21 @@ function handleInput(dt) {
     //Se registra el input
     if (input.isDown('RIGHT')) {
 
+        //Toma el sprite para la animación
         player.sprite.changeUrl(playerSpriteUrlRight);
 
-        //Se almacena la posicion anterior
+        //Se almacena la posicion anterior del jugador
         player.savePreviousPosition();
 
-        //Se recalcula la nueva posición
+        //Se recalcula la nueva posición del jugador
         player.moveRight(dt);
-        
+
         //Se valida que en la nueva posición del jugador, no haya ninguna colisión en la escena
         if (scene.collided(player)) {
 
             //Si hubo colisión, se restaura la posición inmediata anterior para redibujar al personaje detenido ante la colisión
             player.restorePreviousPosition();
         }
-        
-        scene.updateEntities(dt, player);
     }
 
     if (input.isDown('UP')) {
@@ -125,8 +132,6 @@ function handleInput(dt) {
         if (scene.collided(player)) {
             player.restorePreviousPosition();
         }
-        
-        scene.updateEntities(dt, player);
     }
     
     if (input.isDown('DOWN')) {
@@ -138,8 +143,6 @@ function handleInput(dt) {
         if (scene.collided(player)) {
             player.restorePreviousPosition();
         }
-        
-        scene.updateEntities(dt, player);
     }
 
     if (input.isDown('LEFT')) {
@@ -153,8 +156,6 @@ function handleInput(dt) {
         if (scene.collided(player)) {
             player.restorePreviousPosition();
         }
-        
-       scene.updateEntities(dt, player);
     }
 
     //if (input.isDown('SPACE') &&

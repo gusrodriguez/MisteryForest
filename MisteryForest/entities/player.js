@@ -7,17 +7,13 @@ var initialPlayerPositionY = 0;
 //Jugador principal
 var player = {
     
-    gravity: 0.5,
-    
-    fallSpeed: 200,
-        
     position: [initialPlayerPositionX, initialPlayerPositionY],
 
     previousPosition: [], 
 
     sprite: new Sprite('resources/sprites/hero-sprite-walking-right.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7]),
-    
-    //Mantiene al jugador dentro del canvas
+   
+   //Mantiene al jugador dentro del canvas
     keepInsideCanvas: function () {
         
         if (this.position[0] < 0) {
@@ -46,34 +42,46 @@ var player = {
         ctx.save();
 
         ctx.translate(this.position[0], this.position[1]);
-
-        //ctx.rotate(-180 + Math.PI / 2.0);
-
+        
         this.sprite.render(ctx);
 
         ctx.restore();
     },
     
     moveRight: function (dt) {
-        player.position[0] += playerSpeed * dt;
+        
+        if (player.isOnTheGround(dt)) {
+            player.position[0] += playerSpeed * dt;
+            this.sprite.animate(true);
+        }
     },
     
     moveLeft: function (dt) {
-        player.position[0] -= playerSpeed * dt;
+
+        if (player.isOnTheGround(dt)) {
+            player.position[0] -= playerSpeed * dt;
+            this.sprite.animate(true);
+        }
     },
     
     moveUp: function (dt) {
-        player.position[1] -= playerSpeed * dt;
+
+        if (player.isOnTheGround(dt)) {
+            player.position[1] -= playerSpeed * dt;
+            this.sprite.animate(true);
+        }
     },
     
     moveDown: function (dt) {
         player.position[1] += playerSpeed * dt;
+        this.sprite.animate(true);
     },
     
     restorePreviousPosition: function () {
         player.position[0] = player.previousPosition[0];
         player.position[1] = player.previousPosition[1];
     },
+    
     applyGravity: function (dt) {
 
         if (!this.isOnTheGround()) {
@@ -82,18 +90,21 @@ var player = {
         player.position[1] += this.fallSpeed * dt;
     },
     
-    isOnTheGround: function () {
+    isOnTheGround: function (dt) {
         
         player.savePreviousPosition();
 
         var isOnTheGround = false;
 
-        this.moveDown();
+        this.moveDown(dt);
         
         if (scene.collided(player)) {
             isOnTheGround = true;
             player.restorePreviousPosition();
         }
+        
+        //Anula la animación del sprite en la comprobación del movimiento hacia abajo
+        this.sprite.animate(false);
         
         return isOnTheGround;
     }

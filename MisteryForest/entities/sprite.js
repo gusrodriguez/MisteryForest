@@ -1,5 +1,5 @@
 ﻿(function () {
-    function Sprite(url, pos, size, speed, frames, dir, once) {
+    function Sprite(url, pos, size, speed, frames, dir, once, isMoving) {
         
         this.pos = pos;
         this.size = size;
@@ -9,9 +9,14 @@
         this.url = url;
         this.dir = dir || 'horizontal';
         this.once = once;
+        this.isMoving = isMoving || false;
     };
 
     Sprite.prototype = {
+        
+        animate: function(value) {
+            this.isMoving = value;
+        },
         
         changeUrl: function(newUrl) {
             this.url = newUrl;
@@ -24,7 +29,7 @@
         render: function (ctx) {
             var frame;
 
-            if (this.speed > 0) {
+            if (this.isMoving) {
                 var max = this.frames.length;
                 var idx = Math.floor(this._index);
 

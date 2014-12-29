@@ -2,6 +2,8 @@
 
 var scene = {
     
+    gravity: 3,
+    
     amountTilesHorizontal: 20, 
 
     amountTilesVertical: 15,
@@ -119,14 +121,14 @@ var scene = {
     
     //Chequea si en la nueva posición del personaje, hay colisión en la escena
     collided: function (player) {
-
+        
         var collides = false;
 
         player.keepInsideCanvas();
 
         if (scene.tilesetInfo !== undefined) {
             var wallBlocks = scene.tilesetInfo.layers[1].data;
-
+            
             for (var i = 0; i < wallBlocks.length; i++) {
                 //Si hay un bloque colisionable
                 if (wallBlocks[i] != 0) {
@@ -193,7 +195,15 @@ var scene = {
         return blockPosition;
     },
     
-    // Actualiza el estado de todas las entidades
+    applyGravity: function(dt, player) {
+
+        if (!player.isOnTheGround(dt)) {
+            player.position[1] -= this.gravity * dt;
+        }
+        
+    },
+    
+        // Actualiza el estado de todas las entidades
     updateEntities: function(dt, player) {
     
         player.sprite.update(dt);
