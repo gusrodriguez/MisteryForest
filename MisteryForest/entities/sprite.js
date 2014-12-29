@@ -1,5 +1,6 @@
 ﻿(function () {
     function Sprite(url, pos, size, speed, frames, dir, once) {
+        
         this.pos = pos;
         this.size = size;
         this.speed = typeof speed === 'number' ? speed : 0;
@@ -11,6 +12,7 @@
     };
 
     Sprite.prototype = {
+        
         update: function (dt) {
             this._index += this.speed * dt;
         },
@@ -53,4 +55,5 @@
     };
 
     window.Sprite = Sprite;
+    
 })();

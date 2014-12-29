@@ -1,21 +1,26 @@
 ﻿(function () {
+    
     var resourceCache = {};
+    
     var loading = [];
+    
     var readyCallbacks = [];
 
-    // Load an image url or an array of image urls
+    // Lee una imagen desde una url
     function load(urlOrArr) {
+        
         if (urlOrArr instanceof Array) {
             urlOrArr.forEach(function (url) {
-                _load(url);
+                loadFromUrlOrCache(url);
             });
         }
         else {
-            _load(urlOrArr);
+            loadFromUrlOrCache(urlOrArr);
         }
     }
 
-    function _load(url) {
+    function loadFromUrlOrCache(url) {
+        
         if (resourceCache[url]) {
             return resourceCache[url];
         }
