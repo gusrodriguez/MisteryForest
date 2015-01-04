@@ -1,14 +1,16 @@
-﻿//Variables globales
-
-//Cross browser requestAnimationFrame
+﻿//Cross browser requestAnimationFrame
 var requestAnimFrame = (function () {
+
     return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
         window.oRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
+
         function (callback) {
+
             window.setTimeout(callback, 1000 / 60);
+
         };
 })();
 
@@ -16,15 +18,9 @@ var requestAnimFrame = (function () {
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
 canvas.width = 640;
-canvas.height = 480;
+canvas.height = 480
 document.body.appendChild(canvas);
-var tileSize = 32;
 var gridSufix = "";
-
-//Velocidades de las entidades
-var playerSpeed = 200;
-var bulletSpeed = 500;
-var enemySpeed = 100;
 
 //Entidades múltiples
 var bullets = [];
@@ -37,10 +33,13 @@ var gameTime = 0;
 var isGameOver;
 var backgroundPattern;
 
+//Ubicación de los recursos
 var tilesetUrl = 'resources/maps/level1-tileset.png';
 var playerSpriteUrlRight = 'resources/sprites/hero-sprite-walking-right.png';
 var playerSpriteUrlLeft = 'resources/sprites/hero-sprite-walking-left.png';
 var stage1Url = 'resources/maps/level1-map.png';
+
+var level;
 
 //Carga los recursos
 resources.load([
@@ -57,12 +56,17 @@ resources.onReady(init);
 function init() {
 
     lastTime = Date.now();
-    
+
     backgroundPattern = ctx.createPattern(resources.get(stage1Url), 'no-repeat');
 
-    scene.load("level1-map");
+    //Cuando se termina de cargar la escena, da inicio al bucle principal
+    scene.load("level1-map").done(function () {
 
-    main();
+        //Matriz de 20 x 15 que representa el mapa del nivel y la ubicación de los tiles colisionables
+        level = listToMatrix(scene.tilesetInfo.layers[1].data, 20);
+
+        main();
+    });
 }
 
 // Bucle principal
@@ -71,115 +75,79 @@ var lastTime;
 function main() {
 
     var now = Date.now();
-
-    var dt = (now - lastTime) / 1000.0;
-
-    update(dt);
-
-    scene.render();
-
-    player.render();
-    
+    dt = (now - lastTime) / 1000.0;
+    update();
     lastTime = now;
-
     requestAnimFrame(main);
 };
 
-function update(dt) {
+function update() {
 
-    //gameTime += dt;
+    //Dibuja el mapa
+    scene.render();
 
-    //Si el personaje está detenido, no ejecuta la animación
-    player.sprite.animate(false);
+    //Dibuja al jugador
+    player.render();
 
-    //Aplica gravedad
-    scene.applyGravity(dt, player);
-    
-    handleInput(dt);
-    
-    scene.updateEntities(dt, player);
- };
+    //No hay friccion ni inercia, entonces en cada frame la velocidad inicial del jugador es cero
+    player.speedX = 0;
 
-//Controller para los input
-function handleInput(dt) {
-    
-    //Se registra el input
-    if (input.isDown('RIGHT')) {
+    //La velocidad en Y del jugador siempre es afectada por la gravedad
+    player.speedY += scene.gravity;
 
-        //Toma el sprite para la animación
-        player.sprite.changeUrl(playerSpriteUrlRight);
+    // Limita la velocidad de la caída en el eje Y
+    player.speedY = Math.min(player.speedY, player.maxFallingSpeed);
 
-        //Se almacena la posicion anterior del jugador
-        player.savePreviousPosition();
+    // Actualiza la velocidad del jugador de acuerdo a la tecla presionada
+    if (rightPressed) {
+        player.speedX = player.movementSpeed;
 
-        //Se recalcula la nueva posición del jugador
-        player.moveRight(dt);
+        //Cambia los recursos para que se muestre el sprite del personaje caminando hacia la derecha
+        player.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
 
-        //Se valida que en la nueva posición del jugador, no haya ninguna colisión en la escena
-        if (scene.collided(player)) {
+        //Inicia la animación del sprite
+        player.sprite.animate(true);
+    }
+    else {
+        //Cancela la animación si el personaje está detenido
+        player.sprite.animate(false);
 
-            //Si hubo colisión, se restaura la posición inmediata anterior para redibujar al personaje detenido ante la colisión
-            player.restorePreviousPosition();
+        if (leftPressed) {
+            player.speedX = -player.movementSpeed;
+
+            player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
+
+            player.sprite.animate(true);
+
+        }
+        else {
+            player.sprite.animate(false);
+
+            //TODO
+            if (upPressed) {
+                /*player.speedY=-movementSpeed;*/
+            }
+            else {
+                if (downPressed) {
+                    /*player.speedY=movementSpeed;*/
+                }
+            }
         }
     }
 
-    if (input.isDown('UP')) {
+    //Guarda la posición del jugador antes de modificarla
+    player.savePreviousPosition();
 
-        player.savePreviousPosition();
+    //Actualiza la posición del jugador
+    player.positionX += player.speedX;
+    player.positionY += player.speedY;
 
-        player.moveUp(dt);
-        
-        if (scene.collided(player)) {
-            player.restorePreviousPosition();
-        }
-    }
-    
-    if (input.isDown('DOWN')) {
-        
-        player.savePreviousPosition();
+    //Mantiene al jugador dentro del canvas
+    player.keepInsideCanvas();
 
-        player.moveDown(dt);
-        
-        if (scene.collided(player)) {
-            player.restorePreviousPosition();
-        }
-    }
+    //Detección y resolución de colisiones
+    scene.handleCollisions(player);
 
-    if (input.isDown('LEFT')) {
-        
-        player.sprite.changeUrl(playerSpriteUrlLeft);
-
-        player.savePreviousPosition();
-
-        player.moveLeft(dt);
-        
-        if (scene.collided(player)) {
-            player.restorePreviousPosition();
-        }
-    }
-
-    //if (input.isDown('SPACE') &&
-    //    !isGameOver &&
-    //    Date.now() - lastFire > 100) {
-    //    var x = player.position[0] + player.sprite.size[0] / 2;
-    //    var y = player.position[1] + player.sprite.size[1] / 2;
-
-    //    bullets.push({
-    //        pos: [x, y],
-    //        dir: 'forward',
-    //        sprite: new Sprite('img/sprites.png', [0, 39], [18, 8])
-    //    });
-    //    bullets.push({
-    //        pos: [x, y],
-    //        dir: 'up',
-    //        sprite: new Sprite('img/sprites.png', [0, 50], [9, 5])
-    //    });
-    //    bullets.push({
-    //        pos: [x, y],
-    //        dir: 'down',
-    //        sprite: new Sprite('img/sprites.png', [0, 60], [9, 5])
-    //    });
-
-    //    lastFire = Date.now();
-    //}
-}
+    //Actualiza el estado de todas las entidades en la escena
+    scene.updateEntities(player);
+};

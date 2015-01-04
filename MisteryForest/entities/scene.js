@@ -1,211 +1,195 @@
-﻿var tileSize = 32;
+﻿var playerSizeX = 64;
+var playerSizeY = 64;
+var tileSize = 32;
+var sizeDiff = playerSizeX - tileSize;
 
 var scene = {
-    
-    gravity: 3,
-    
-    amountTilesHorizontal: 20, 
 
-    amountTilesVertical: 15,
+    //Aceleración de la gravedad, en pixels / frame x frame
+    gravity: 0.5,
+
+    tileSize: tileSize,
+
+    sizeDiff: Math.abs(sizeDiff),
 
     layers: [],
-    
+
     renderLayer: function (layer) {
-        // data: [array of tiles, 1-based, position of sprite from top-left]
-        // height: integer, height in number of sprites
-        // name: "string", internal name of layer
-        // opacity: integer
-        // type: "string", layer type (tile, object)
-        // visible: boolean
-        // width: integer, width in number of sprites
-        // x: integer, starting x position
-        // y: integer, starting y position
-        
+
+        // data: arrays de tiles, 1-based, posición del sprite desde la esquina superior izquierda
+        // height: numero de sprites
+        // name: nombre interno de la capa
+        // type: tipo de capa (tile, object)
+        // width: ancho en numero de sprites
+        // x: posición inicial en X
+        // y: posición inicial en Y
+
         if (layer.type !== "tilelayer" || !layer.opacity) {
             return;
         }
-        
-        var s = canvas.cloneNode();
-        
+
+        var clonedContext = canvas.cloneNode();
+
         var size = scene.data.tilewidth;
 
-        s = s.getContext("2d");
-        
+        clonedContext = clonedContext.getContext("2d");
+
         if (scene.layers.length < scene.data.layers.length) {
-            
             layer.data.forEach(function (tileIndex, i) {
-                
-                if (!tileIndex) { return; }
+
+                if (!tileIndex) {
+                    return;
+                }
 
                 var imageX, imageY, sceneX, sceneY;
-                
                 var tile = scene.data.tilesets[0];
-                
+
                 tileIndex--;
+
                 imageX = (tileIndex % (tile.imagewidth / size)) * size;
                 imageY = ~~(tileIndex / (tile.imagewidth / size)) * size;
                 sceneX = (i % layer.width) * size;
                 sceneY = ~~(i / layer.width) * size;
-                
-                s.drawImage(scene.tileset, imageX, imageY, size, size,
+
+                clonedContext.drawImage(scene.tileset, imageX, imageY, size, size,
                             sceneX, sceneY, size, size);
             });
-            
-            scene.layers.push(s.canvas.toDataURL());
-            
-            ctx.drawImage(s.canvas, 0, 0);
+
+            scene.layers.push(clonedContext.canvas.toDataURL());
+
+            ctx.drawImage(clonedContext.canvas, 0, 0);
         }
         else {
-            
             scene.layers.forEach(function (src) {
-
                 var i = $("<img />", { src: src })[0];
-                
                 ctx.drawImage(i, 0, 0);
             });
         }
     },
+
     renderLayers: function (layers) {
-        
         layers = $.isArray(layers) ? layers : this.data.layers;
-        
         layers.forEach(this.renderLayer);
     },
+
     loadTileset: function (json) {
-        
         this.data = json;
-        
         this.tileset = $("<img />", { src: json.tilesets[0].image })[0];
-        
         this.tileset.onload = $.proxy(this.renderLayers, this);
     },
+
     load: function (name) {
-        
         //Si el tileset no se cargó, lo va a buscar al servidor.
         if (scene.tilesetInfo === undefined) {
-            
             return $.ajax({
-                
                 url: "/Api/Map",
-                
                 type: "POST"
-                
+
             }).done(function (json) {
-                
+
                 scene.tilesetInfo = json;
-                
+
                 $.proxy(this.loadTileset, this);
-                
             });
-        } else {
+        }
+        else {
             //Si el tileset está cacheado, redibuja la escena con la información en memoria
             scene.data = scene.tilesetInfo;
-            
+
             scene.renderLayers(scene.layers);
         }
     },
-    
+
     //Dibuja la escena
     render: function () {
-   
+
         //Redibuja la escena completa en cada frame
         //El redibujo es un fillRect con el fillstyle que representa la imagen de fondo
         ctx.fillStyle = backgroundPattern;
+
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        //Preguntar si el juego no terminó antes de dibujar al jugador
+        //TODO: Preguntar si el juego no terminó antes de dibujar al jugador
         //if (!isGameOver) {
-        //renderEntity(player);
+        //  renderEntity(player);
         //}
     },
-    
-    //Chequea si en la nueva posición del personaje, hay colisión en la escena
-    collided: function (player) {
-        
-        var collides = false;
 
-        player.keepInsideCanvas();
+    //Detección y resolución de colisiones.
+    //La detección se realiza usando la matriz del nivel, y detectando los elementos colisionables en la vecindad de la dirección a la que se intenta moverse
+    //La resolución se realiza seteando la velocidad del jugador en cero y restaurando su posición a la anterior
+    handleCollisions: function (player) {
 
-        if (scene.tilesetInfo !== undefined) {
-            var wallBlocks = scene.tilesetInfo.layers[1].data;
-            
-            for (var i = 0; i < wallBlocks.length; i++) {
-                //Si hay un bloque colisionable
-                if (wallBlocks[i] != 0) {
+        //La columna en la matriz del nivel en la que el jugador se encuentra posicionado
+        var baseCol = Math.floor((player.positionX + player.size) / tileSize) - 1;
 
-                    var blockPosition = [];
-                    var blockSize = [];
-                    var playerSize = [];
+        //La fila en la matriz del nivel en la que el jugador se encuentra posicionado
+        var baseRow = Math.floor((player.positionY + player.size) / tileSize) - 1;
 
-                    //Calcula la posicion del bloque colisionable dado el indice de la matriz del mapa.
-                    blockPosition = this.calculateTilePositionByIndex(i);
+        var colOverlap = (player.positionX + player.size) % scene.tileSize > scene.sizeDiff;
+        var rowOverlap = (player.positionY + player.size) % scene.tileSize > scene.sizeDiff;
 
-                    blockSize[0] = tileSize;
-                    blockSize[1] = tileSize;
+        if (player.speedY > 0) {
+            //TODO: ver solapamientos
+            //if ((level[baseRow+1][baseCol] && !level[baseRow][baseCol]) || (level[baseRow+1][baseCol+1] && !level[baseRow][baseCol+1] && colOverlap && rowOverlap)) {
 
-                    playerSize[0] = playerSizeX;
-                    playerSize[1] = playerSizeY;
+            //Detección de la colisión en el eje Y ascendente (dirección hacia abajo).
+            //Si en el vecino hacia abajo hay un elemento distinto de cero, o sea colisionable, entonces hay colisión.
+            // 0 0 0                 
+            // 0 P 0   P = player    
+            // 0 1 0
+            if ((level[baseRow + 1][baseCol])) {
+                //Resolución de la colisión
+                player.restorePreviousPositionY();
+                player.speedY = 0;
 
-                    if (this.boxCollides(blockPosition, blockSize, player.position, playerSize)) {
-                        collides = true;
-                    }
+                //Si hay colisión hacia abajo, entonces está en el piso
+                player.onTheGround = true;
+
+                if (player.jumped) {
+
+                    player.lastTouch = new Date().getTime();
+                    player.jumped = false;
                 }
             }
         }
 
-        return collides;
-    },
-    
-    boxCollides: function(pos, size, pos2, size2) {
+        if (player.speedY < 0) {
+            //if ((!level[baseRow + 1][baseCol] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow][baseCol + 1])) {
 
-        //if (this.isCollision(pos[0], pos[1],
-        //    pos[0] + size[0], pos[1] + size[1],
-        //    pos2[0], pos2[1],
-        //    pos2[0] + size2[0], pos2[1] + size2[1])) {
-        //    console.log("colision");
-        //}
-
-        return this.isCollision(pos[0], pos[1],
-                        pos[0] + size[0], pos[1] + size[1],
-                        pos2[0], pos2[1],
-                        pos2[0] + size2[0], pos2[1] + size2[1]);
-    },
-
-    isCollision: function (x, y, r, b, x2, y2, r2, b2) {
-        return !(r <= x2 || x > r2 ||
-                 b <= y2 || y > b2);
-    },
-    
-    //Calcula la posicion del Tile (extremo superior izquierdo) dado su índice en la matriz del mapa.
-    calculateTilePositionByIndex: function(index) {
-
-        var blockPosition = [];
-
-        //Ubica la fila en la matriz de bloques
-        var row = Math.floor(index / this.amountTilesHorizontal);
-        var column = index - (2 * row * 10);
-
-        //Toma el punto que representa la esquina superior izquierda del Tile colisionable en curso
-        var posYColisionableTile = row * tileSize;
-        var posXColisionableTile = column * tileSize;
-
-        blockPosition[0] = posXColisionableTile;
-        blockPosition[1] = posYColisionableTile;
-
-        return blockPosition;
-    },
-    
-    applyGravity: function(dt, player) {
-
-        if (!player.isOnTheGround(dt)) {
-            player.position[1] -= this.gravity * dt;
+            //Detección de la colisión en el eje Y descendente (dirección hacia arriba)
+            if (level[baseRow - 1][baseCol]) {
+                //Resolución de la colisión
+                player.restorePreviousPositionY();
+                player.speedY = 0;
+            }
         }
-        
+
+        if (player.speedX > 0) {
+            //if ((level[baseRow][baseCol] && !level[baseRow][baseCol] && colOverlap) || (level[baseRow + 1][baseCol + 1] && !level[baseRow + 1][baseCol] && rowOverlap && colOverlap)) {
+
+            //Detección de la colisión en el eje X ascendente (dirección hacia la derecha)
+            if (level[baseRow][baseCol + 1]) {
+                //Resolución de la colisión
+                player.restorePreviousPositionX();
+                player.speedX = 0;
+            }
+        }
+
+        if (player.speedX < 0) {
+            //if ((!level[baseRow][baseCol] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow + 1][baseCol] && rowOverlap)) {
+
+            //Detección de la colisión en el eje X descendente (dirección hacia la izquierda)
+            if (level[baseRow][baseCol - 1]) {
+                //Resolución de la colisión
+                player.restorePreviousPositionX();
+                player.speedX = 0;
+            }
+        }
     },
-    
-        // Actualiza el estado de todas las entidades
-    updateEntities: function(dt, player) {
-    
+
+    // Actualiza el estado de todas las entidades
+    updateEntities: function (player) {
         player.sprite.update(dt);
 
         //// Update all the bullets

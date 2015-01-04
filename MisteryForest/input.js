@@ -1,63 +1,63 @@
-﻿(function () {
-    var pressedKeys = {};
+﻿var leftPressed = false;
+var rightPressed = false;
+var upPressed = false;
+var downPressed = false;
 
-    function setKey(event, status) {
-        var code = event.keyCode;
-        var key;
+document.addEventListener("keydown", function (ev) {
+    switch (ev.keyCode) {
+        case 37:
 
-        switch (code) {
-            case 32:
-                key = 'SPACE'; break;
-            case 37:
-                key = 'LEFT'; break;
-            case 38:
-                key = 'UP'; break;
-            case 39:
-                key = 'RIGHT'; break;
-            case 40:
-                key = 'DOWN'; break;
-            default:
-                // Convierte el ASCII a letras
-                key = String.fromCharCode(code);
-        }
+            leftPressed = true;
+            break;
 
-        pressedKeys[key] = status;
-    }
+        case 32:
 
-    document.addEventListener('keydown', function (e) {
-        setKey(e, true);
-        e.preventDefault();
-    });
+            // El salto se produce cuando se satisfacen estas tres condiciones.
+            // 1 - El jugador está en el piso.
+            // 2 - La velocidad en Y es igual a cero.
+            // 3 - El botón de salto está liberado.
+            if (player.onTheGround && player.speedY == 0 && !upPressed) {
 
-    document.addEventListener('keyup', function (e) {
-        setKey(e, false);
-        e.preventDefault();
-    });
+                //console.log(new Date().getTime() - player.lastTouch);
+                if (new Date().getTime() - player.lastTouch < player.doubleJumpDelay) {
+                    player.speedY = -player.superJumpSpeed;
+                }
+                else {
+                    player.speedY = -player.jumpSpeed;
+                }
 
-    window.addEventListener('blur', function () {
-        pressedKeys = {};
-    });
-
-    window.input = {
-        isDown: function(key) {
-            return pressedKeys[key.toUpperCase()];
-        },
-        anyKeyPressed: function () {
-            
-            var any = false;
-
-            var pressed = $.grep(pressedKeys, function (n, i) {
-                return n == true;
-            });
-
-            if (pressed.length > 0) {
-                any = true;
-                console.log("oo");
+                player.jumped = true;
+                player.onTheGround = false;
             }
 
-            console.log("uu");
+            upPressed = true;
+            break;
 
-            return any;
-        }
-};
-})();
+        case 39:
+
+            rightPressed = true;
+            break;
+
+        case 40:
+
+            downPressed = true;
+            break;
+    }
+}, false);
+
+document.addEventListener("keyup", function (ev) {
+    switch (ev.keyCode) {
+        case 37:
+            leftPressed = false;
+            break;
+        case 32:
+            upPressed = false;
+            break;
+        case 39:
+            rightPressed = false;
+            break;
+        case 40:
+            downPressed = false;
+            break;
+    }
+}, false);
