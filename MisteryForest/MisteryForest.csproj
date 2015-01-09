@@ -146,6 +146,7 @@
     <Content Include="resources\maps\level1-tileset-grid.png" />
     <Content Include="resources\maps\level1-tileset.png" />
     <Content Include="resources\sprites\hero-sprite-all.png" />
+    <Content Include="resources\sprites\hero-sprite-jumping-left.png" />
     <Content Include="resources\sprites\hero-sprite-jumping-right.png" />
     <Content Include="resources\sprites\hero-sprite-walking-grid.png" />
     <Content Include="resources\sprites\hero-sprite-walking-left.png" />

@@ -30,7 +30,17 @@ document.addEventListener("keydown", function (ev) {
                 player.onTheGround = false;
 
                 //Recursos y cantidad de frames para la secuencia de animacion del salto
-                var resourceUrl = 'resources/sprites/hero-sprite-jumping-right.png';
+                var resourceUrl;
+
+                if (player.isFacingRight) 
+                {
+                    resourceUrl = 'resources/sprites/hero-sprite-jumping-right.png';
+                }
+                else if (player.isFacingLeft)
+                {
+                    resourceUrl = 'resources/sprites/hero-sprite-jumping-left.png';
+                }
+
                 var framesNumberToAnimate = 8;
                 player.sprite.animate(true);
                 player.sprite.animateLinearSequence(resourceUrl, framesNumberToAnimate);

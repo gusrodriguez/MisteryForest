@@ -98,7 +98,7 @@
         
         animateLinearSequence: function (resourceUrl, framesNumberToAnimate) {
 
-            this.changeUrl('resources/sprites/hero-sprite-jumping-right.png');
+            this.changeUrl(resourceUrl);
 
             this.linearSequence = true;
 

@@ -48,6 +48,10 @@ var player = {
 
     //Velocidad del supersalto
     superJumpSpeed: 15,
+    
+    isFacingRight: true,
+    
+    isFacingLeft: false,
 
     sprite: new Sprite('resources/sprites/hero-sprite-walking-right.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7]),
 

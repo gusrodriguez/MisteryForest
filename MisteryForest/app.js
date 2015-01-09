@@ -39,6 +39,7 @@ var playerSpriteUrlRight = 'resources/sprites/hero-sprite-walking-right.png';
 var playerSpriteUrlLeft = 'resources/sprites/hero-sprite-walking-left.png';
 var stage1Url = 'resources/maps/level1-map.png';
 var playerSpriteUrlJumpRight = 'resources/sprites/hero-sprite-jumping-right.png';
+var playerSpriteUrlJumpLeft = 'resources/sprites/hero-sprite-jumping-left.png';
 
 var level;
 
@@ -48,7 +49,8 @@ resources.load([
     playerSpriteUrlRight,
     playerSpriteUrlLeft,
     stage1Url,
-    playerSpriteUrlJumpRight
+    playerSpriteUrlJumpRight,
+    playerSpriteUrlJumpLeft
 ]);
 
 //Para que el objeto Sprite dibuje sobre el canvas, es necesario cargar primero todas las imagenes antes de comenzar con el bucle principal
@@ -109,6 +111,10 @@ function update() {
         
         player.speedX = player.movementSpeed;
 
+        player.isFacingRight = true;
+
+        player.isFacingLeft = false;
+
         //Cambia los recursos para que se muestre el sprite del personaje caminando hacia la derecha
         player.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
 
@@ -123,6 +129,10 @@ function update() {
         if (leftPressed) {
             
             player.speedX = -player.movementSpeed;
+            
+            player.isFacingRight = false;
+
+            player.isFacingLeft = true;
 
             player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
 
@@ -130,18 +140,20 @@ function update() {
 
         }
         else {
+            
             player.sprite.animate(false);
 
-            //TODO
-            if (upPressed) {
+           if (upPressed) {
                 
                 player.sprite.animate(true);
-                /*player.speedY=-movementSpeed;*/
+           
             }
-            else {
+           else {
+               
+               //TODO: Agacharse
                 if (downPressed) {
-                    /*player.speedY=movementSpeed;*/
                 }
+               
             }
         }
     }
