@@ -28,6 +28,12 @@ document.addEventListener("keydown", function (ev) {
 
                 player.jumped = true;
                 player.onTheGround = false;
+
+                //Recursos y cantidad de frames para la secuencia de animacion del salto
+                var resourceUrl = 'resources/sprites/hero-sprite-jumping-right.png';
+                var framesNumberToAnimate = 8;
+                player.sprite.animate(true);
+                player.sprite.animateLinearSequence(resourceUrl, framesNumberToAnimate);
             }
 
             upPressed = true;

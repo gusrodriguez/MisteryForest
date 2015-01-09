@@ -38,6 +38,7 @@ var tilesetUrl = 'resources/maps/level1-tileset.png';
 var playerSpriteUrlRight = 'resources/sprites/hero-sprite-walking-right.png';
 var playerSpriteUrlLeft = 'resources/sprites/hero-sprite-walking-left.png';
 var stage1Url = 'resources/maps/level1-map.png';
+var playerSpriteUrlJumpRight = 'resources/sprites/hero-sprite-jumping-right.png';
 
 var level;
 
@@ -46,7 +47,8 @@ resources.load([
     tilesetUrl,
     playerSpriteUrlRight,
     playerSpriteUrlLeft,
-    stage1Url
+    stage1Url,
+    playerSpriteUrlJumpRight
 ]);
 
 //Para que el objeto Sprite dibuje sobre el canvas, es necesario cargar primero todas las imagenes antes de comenzar con el bucle principal
@@ -97,9 +99,14 @@ function update() {
 
     // Limita la velocidad de la caída en el eje Y
     player.speedY = Math.min(player.speedY, player.maxFallingSpeed);
+    
+    if (player.onTheGround) {
+        player.sprite.linearSequence = false;
+    }
 
     // Actualiza la velocidad del jugador de acuerdo a la tecla presionada
     if (rightPressed) {
+        
         player.speedX = player.movementSpeed;
 
         //Cambia los recursos para que se muestre el sprite del personaje caminando hacia la derecha
@@ -109,10 +116,12 @@ function update() {
         player.sprite.animate(true);
     }
     else {
+        
         //Cancela la animación si el personaje está detenido
         player.sprite.animate(false);
 
         if (leftPressed) {
+            
             player.speedX = -player.movementSpeed;
 
             player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
@@ -125,6 +134,8 @@ function update() {
 
             //TODO
             if (upPressed) {
+                
+                player.sprite.animate(true);
                 /*player.speedY=-movementSpeed;*/
             }
             else {
