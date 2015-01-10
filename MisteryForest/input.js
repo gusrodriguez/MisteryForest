@@ -1,24 +1,30 @@
 ﻿var leftPressed = false;
 var rightPressed = false;
-var upPressed = false;
+var jumpPressed = false;
 var downPressed = false;
+var firePressed = false;
 
 document.addEventListener("keydown", function (ev) {
+    
+    var resourceUrl;
+    var framesNumberToAnimate;
+
     switch (ev.keyCode) {
+    
         case 37:
 
             leftPressed = true;
             break;
 
+        //Salto
         case 32:
 
             // El salto se produce cuando se satisfacen estas tres condiciones.
             // 1 - El jugador está en el piso.
             // 2 - La velocidad en Y es igual a cero.
             // 3 - El botón de salto está liberado.
-            if (player.onTheGround && player.speedY == 0 && !upPressed) {
-
-                //console.log(new Date().getTime() - player.lastTouch);
+            if (player.onTheGround && player.speedY == 0 && !jumpPressed) {
+                
                 if (new Date().getTime() - player.lastTouch < player.doubleJumpDelay) {
                     player.speedY = -player.superJumpSpeed;
                 }
@@ -30,8 +36,6 @@ document.addEventListener("keydown", function (ev) {
                 player.onTheGround = false;
 
                 //Recursos y cantidad de frames para la secuencia de animacion del salto
-                var resourceUrl;
-
                 if (player.isFacingRight) 
                 {
                     resourceUrl = 'resources/sprites/hero-sprite-jumping-right.png';
@@ -40,13 +44,12 @@ document.addEventListener("keydown", function (ev) {
                 {
                     resourceUrl = 'resources/sprites/hero-sprite-jumping-left.png';
                 }
-
-                var framesNumberToAnimate = 8;
+                framesNumberToAnimate = 8;
                 player.sprite.animate(true);
                 player.sprite.animateLinearSequence(resourceUrl, framesNumberToAnimate);
             }
 
-            upPressed = true;
+            jumpPressed = true;
             break;
 
         case 39:
@@ -58,16 +61,36 @@ document.addEventListener("keydown", function (ev) {
 
             downPressed = true;
             break;
+            
+        case 65:
+            if (!firePressed)
+            {
+                if (player.isFacingRight)
+                {
+                    resourceUrl = 'resources/sprites/hero-sprite-shooting-right.png';
+                }
+                else if (player.isFacingLeft)
+                {
+                    //resourceUrl = 'resources/sprites/hero-sprite-jumping-left.png';
+                }
+                framesNumberToAnimate = 12;
+                player.sprite.animate(true);
+                player.sprite.animateLinearSequence(resourceUrl, framesNumberToAnimate);
+
+                firePressed = true;
+                break;
+            }
     }
 }, false);
 
 document.addEventListener("keyup", function (ev) {
+    
     switch (ev.keyCode) {
         case 37:
             leftPressed = false;
             break;
         case 32:
-            upPressed = false;
+            jumpPressed = false;
             break;
         case 39:
             rightPressed = false;
@@ -75,5 +98,54 @@ document.addEventListener("keyup", function (ev) {
         case 40:
             downPressed = false;
             break;
+        case 65:
+            firePressed = false;
+            break;
     }
 }, false);
+
+//El inputhandler está dentro del bucle principal
+var inputHandler = {
+    
+    handle: function (player) {
+
+        if (rightPressed) {
+
+            player.speedX = player.movementSpeed;
+
+            player.faceRight();
+
+            //Cambia los recursos para que se muestre el sprite del personaje caminando hacia la derecha
+            player.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
+
+            //Inicia la animación del sprite
+            player.sprite.animate(true);
+        }
+
+        if (leftPressed) {
+
+            player.speedX = -player.movementSpeed;
+
+            player.faceLeft();
+
+            player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
+
+            player.sprite.animate(true);
+
+        }
+
+        if (jumpPressed) {
+
+            player.sprite.animate(true);
+
+        }
+
+        if (firePressed) {
+            player.sprite.animate(true);
+        } 
+
+        //TODO: Agacharse
+        if (downPressed) {
+        }
+    }
+}

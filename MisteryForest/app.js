@@ -1,11 +1,11 @@
-﻿//Cross browser requestAnimationFrame
+﻿//requestAnimationFrame cross browser
 var requestAnimFrame = (function () {
 
-    return window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
+    return window.requestAnimationFrame       ||
+           window.webkitRequestAnimationFrame ||
+           window.mozRequestAnimationFrame    ||
+           window.oRequestAnimationFrame      ||
+           window.msRequestAnimationFrame     ||
 
         function (callback) {
 
@@ -17,14 +17,14 @@ var requestAnimFrame = (function () {
 //Canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
+
 canvas.width = 640;
 canvas.height = 480
 document.body.appendChild(canvas);
-var gridSufix = "";
 
 //Entidades múltiples
-var bullets = [];
-var enemies = [];
+var bullets    = [];
+var enemies    = [];
 var explosions = [];
 
 //Estado del juego
@@ -35,22 +35,25 @@ var backgroundPattern;
 
 //Ubicación de los recursos
 var tilesetUrl = 'resources/maps/level1-tileset.png';
-var playerSpriteUrlRight = 'resources/sprites/hero-sprite-walking-right.png';
-var playerSpriteUrlLeft = 'resources/sprites/hero-sprite-walking-left.png';
-var stage1Url = 'resources/maps/level1-map.png';
-var playerSpriteUrlJumpRight = 'resources/sprites/hero-sprite-jumping-right.png';
-var playerSpriteUrlJumpLeft = 'resources/sprites/hero-sprite-jumping-left.png';
+var stage1Url  = 'resources/maps/level1-map.png';
+var playerSpriteUrlWalkRight  = 'resources/sprites/hero-sprite-walking-right.png';
+var playerSpriteUrlWalkLeft   = 'resources/sprites/hero-sprite-walking-left.png';
+var playerSpriteUrlJumpRight  = 'resources/sprites/hero-sprite-jumping-right.png';
+var playerSpriteUrlJumpLeft   = 'resources/sprites/hero-sprite-jumping-left.png';
+var playerSpriteUrlShootRight = 'resources/sprites/hero-sprite-shooting-right.png';
 
+//Matriz del mapa del nivel
 var level;
 
 //Carga los recursos
 resources.load([
     tilesetUrl,
-    playerSpriteUrlRight,
-    playerSpriteUrlLeft,
     stage1Url,
+    playerSpriteUrlWalkRight,
+    playerSpriteUrlWalkLeft,
     playerSpriteUrlJumpRight,
-    playerSpriteUrlJumpLeft
+    playerSpriteUrlJumpLeft,
+    playerSpriteUrlShootRight
 ]);
 
 //Para que el objeto Sprite dibuje sobre el canvas, es necesario cargar primero todas las imagenes antes de comenzar con el bucle principal
@@ -79,9 +82,13 @@ var lastTime;
 function main() {
 
     var now = Date.now();
+    
     dt = (now - lastTime) / 1000.0;
+    
     update();
+    
     lastTime = now;
+    
     requestAnimFrame(main);
 };
 
@@ -93,7 +100,7 @@ function update() {
     //Dibuja al jugador
     player.render();
 
-    //No hay friccion ni inercia, entonces en cada frame la velocidad inicial del jugador es cero
+    //No hay friccion ni inercia, entonces en cada frame la velocidad inicial del jugador en X es cero
     player.speedX = 0;
 
     //La velocidad en Y del jugador siempre es afectada por la gravedad
@@ -102,61 +109,18 @@ function update() {
     // Limita la velocidad de la caída en el eje Y
     player.speedY = Math.min(player.speedY, player.maxFallingSpeed);
     
+    //Si está en el piso, anula la secuencia lineal de animación
     if (player.onTheGround) {
         player.sprite.linearSequence = false;
     }
 
-    // Actualiza la velocidad del jugador de acuerdo a la tecla presionada
-    if (rightPressed) {
-        
-        player.speedX = player.movementSpeed;
-
-        player.isFacingRight = true;
-
-        player.isFacingLeft = false;
-
-        //Cambia los recursos para que se muestre el sprite del personaje caminando hacia la derecha
-        player.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
-
-        //Inicia la animación del sprite
-        player.sprite.animate(true);
-    }
-    else {
-        
-        //Cancela la animación si el personaje está detenido
+    //Si está detenido, cancela la animación
+    if (player.speedX == 0) {
         player.sprite.animate(false);
-
-        if (leftPressed) {
-            
-            player.speedX = -player.movementSpeed;
-            
-            player.isFacingRight = false;
-
-            player.isFacingLeft = true;
-
-            player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
-
-            player.sprite.animate(true);
-
-        }
-        else {
-            
-            player.sprite.animate(false);
-
-           if (upPressed) {
-                
-                player.sprite.animate(true);
-           
-            }
-           else {
-               
-               //TODO: Agacharse
-                if (downPressed) {
-                }
-               
-            }
-        }
     }
+
+    //Captura el input
+    inputHandler.handle(player);
 
     //Guarda la posición del jugador antes de modificarla
     player.savePreviousPosition();
@@ -174,3 +138,4 @@ function update() {
     //Actualiza el estado de todas las entidades en la escena
     scene.updateEntities(player);
 };
+

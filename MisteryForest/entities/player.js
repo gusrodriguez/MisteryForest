@@ -49,11 +49,23 @@ var player = {
     //Velocidad del supersalto
     superJumpSpeed: 15,
     
+    //Si está mirando hacia la derecha
     isFacingRight: true,
     
+    //Si está mirando hacia la izquierda
     isFacingLeft: false,
 
     sprite: new Sprite('resources/sprites/hero-sprite-walking-right.png', [initialPlayerPositionX, initialPlayerPositionY], [playerSizeX, playerSizeY], 16, [0, 1, 2, 3, 4, 5, 6, 7]),
+    
+    faceRight: function () {
+        this.isFacingRight = true;
+        this.isFacingLeft = false;
+    },
+
+    faceLeft: function () {
+        this.isFacingRight = false;
+        this.isFacingLeft = true;
+    },
 
     savePreviousPosition: function () {
         this.previousPositionX = this.positionX;

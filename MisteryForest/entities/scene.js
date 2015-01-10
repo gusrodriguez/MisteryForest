@@ -34,10 +34,12 @@ var scene = {
 
         clonedContext = clonedContext.getContext("2d");
 
-        if (scene.layers.length < scene.data.layers.length) {
+        if (scene.layers.length < scene.data.layers.length)
+        {
             layer.data.forEach(function (tileIndex, i) {
 
-                if (!tileIndex) {
+                if (!tileIndex)
+                {
                     return;
                 }
 
@@ -59,7 +61,8 @@ var scene = {
 
             ctx.drawImage(clonedContext.canvas, 0, 0);
         }
-        else {
+        else
+        {
             scene.layers.forEach(function (src) {
                 var i = $("<img />", { src: src })[0];
                 ctx.drawImage(i, 0, 0);
@@ -80,7 +83,8 @@ var scene = {
 
     load: function (name) {
         //Si el tileset no se cargó, lo va a buscar al servidor.
-        if (scene.tilesetInfo === undefined) {
+        if (scene.tilesetInfo === undefined)
+        {
             return $.ajax({
                 url: "/Api/Map",
                 type: "POST"
@@ -92,7 +96,8 @@ var scene = {
                 $.proxy(this.loadTileset, this);
             });
         }
-        else {
+        else
+        {
             //Si el tileset está cacheado, redibuja la escena con la información en memoria
             scene.data = scene.tilesetInfo;
 

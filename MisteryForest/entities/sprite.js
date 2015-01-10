@@ -63,7 +63,7 @@
                 x += frame * this.size[0];
             }
             
-            //Si la secuencia es lineal. Es decir si no es recursiva sino que la animación llega al último elemento del sprite y se detiene.
+            //Si la secuencia es lineal. Es decir si no es recursiva, sino que la animación llega al último elemento del sprite y se detiene.
             if (this.linearSequence) {
                 
                 this.counterFramesInLinearSequence++;
@@ -109,5 +109,4 @@
     };
 
     window.Sprite = Sprite;
-
 })();
