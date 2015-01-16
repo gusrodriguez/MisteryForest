@@ -119,7 +119,14 @@ var inputHandler = {
             player.faceRight();
 
             //Cambia los recursos para que se muestre el sprite del personaje caminando hacia la derecha
-            player.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
+            if (player.killerMode)
+            {
+                player.sprite.changeUrl('resources/sprites/hero-sprite-walking-killer-right.png');
+            }
+            else
+            {
+                player.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
+            }
 
             //Inicia la animación del sprite
             player.sprite.animate(true);
@@ -131,7 +138,14 @@ var inputHandler = {
 
             player.faceLeft();
 
-            player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
+            if (player.killerMode)
+            {
+                player.sprite.changeUrl('resources/sprites/hero-sprite-walking-killer-left.png');
+            }
+            else
+            {
+                player.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
+            }
 
             player.sprite.animate(true);
 

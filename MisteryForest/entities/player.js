@@ -3,6 +3,9 @@ var initialPlayerPositionY = 0;
 
 //Jugador principal
 var player = {
+    
+    //Indica si el jugador está en modo asesino
+    killerMode: false,
 
     //Indica si el jugador está en el piso
     onTheGround: false,
@@ -104,8 +107,34 @@ var player = {
             this.speedY = 0;
         }
     },
+    
+    changeToKillerMode: function () {
 
-    //Dibuja al jugador
+        this.killerMode = true;
+
+        if (this.isFacingRight)
+        {
+            this.sprite.changeUrl('resources/sprites/hero-sprite-walking-killer-right.png');
+        }
+        else if(this.isFacingLeft)
+        {
+            this.sprite.changeUrl('resources/sprites/hero-sprite-walking-killer-left.png');
+        }
+    },
+    
+    changeToNormalMode: function () {
+
+        this.killerMode = false;
+
+        if (this.isFacingRight) {
+            this.sprite.changeUrl('resources/sprites/hero-sprite-walking-right.png');
+        }
+        else if (this.isFacingLeft) {
+            this.sprite.changeUrl('resources/sprites/hero-sprite-walking-left.png');
+        }
+    },
+
+        //Dibuja al jugador
     render: function () {
 
         ctx.save();

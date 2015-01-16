@@ -41,6 +41,8 @@ var playerSpriteUrlWalkLeft   = 'resources/sprites/hero-sprite-walking-left.png'
 var playerSpriteUrlJumpRight  = 'resources/sprites/hero-sprite-jumping-right.png';
 var playerSpriteUrlJumpLeft   = 'resources/sprites/hero-sprite-jumping-left.png';
 var playerSpriteUrlShootRight = 'resources/sprites/hero-sprite-shooting-right.png';
+var playerSpriteUrlWalkKillerRight = 'resources/sprites/hero-sprite-walking-killer-right.png';
+var playerSpriteUrlWalkKillerLeft = 'resources/sprites/hero-sprite-walking-killer-left.png';
 
 //Matriz del mapa del nivel
 var level;
@@ -53,7 +55,9 @@ resources.load([
     playerSpriteUrlWalkLeft,
     playerSpriteUrlJumpRight,
     playerSpriteUrlJumpLeft,
-    playerSpriteUrlShootRight
+    playerSpriteUrlShootRight,
+    playerSpriteUrlWalkKillerRight,
+    playerSpriteUrlWalkKillerLeft
 ]);
 
 //Para que el objeto Sprite dibuje sobre el canvas, es necesario cargar primero todas las imagenes antes de comenzar con el bucle principal

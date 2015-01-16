@@ -13,6 +13,9 @@ var scene = {
     sizeDiff: Math.abs(sizeDiff),
 
     layers: [],
+    
+    //El número de Tile en el TileMap donde está ubicada el arma en el nivel
+    weaponTileNumber: 92,
 
     renderLayer: function (layer) {
 
@@ -125,6 +128,8 @@ var scene = {
     //La resolución se realiza seteando la velocidad del jugador en cero y restaurando su posición a la anterior
     handleCollisions: function (player) {
 
+        var mapElement = 0;
+
         //La columna en la matriz del nivel en la que el jugador se encuentra posicionado
         var baseCol = Math.floor((player.positionX + player.size) / tileSize) - 1;
 
@@ -173,27 +178,59 @@ var scene = {
         if (player.speedX > 0) {
             //if ((level[baseRow][baseCol] && !level[baseRow][baseCol] && colOverlap) || (level[baseRow + 1][baseCol + 1] && !level[baseRow + 1][baseCol] && rowOverlap && colOverlap)) {
 
-            //Detección de la colisión en el eje X ascendente (dirección hacia la derecha)
-            if (level[baseRow][baseCol + 1]) {
-                //Resolución de la colisión
-                player.restorePreviousPositionX();
-                player.speedX = 0;
+            mapElement = level[baseRow][baseCol + 1];
+
+            //Si el jugador agarró el arma, la resolución de la colisión no es frenarlo sino transformarlo
+            if (this.playerGetsWeapon(mapElement))
+            {
+                player.changeToKillerMode();
+            } 
+            else
+            {
+                //Detección de la colisión en el eje X ascendente (dirección hacia la derecha)
+                if (mapElement) {
+                    //Resolución de la colisión
+                    player.restorePreviousPositionX();
+                    player.speedX = 0;
+                }
             }
         }
 
         if (player.speedX < 0) {
+            
+            mapElement = level[baseRow][baseCol - 1];
+            
             //if ((!level[baseRow][baseCol] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow + 1][baseCol] && rowOverlap)) {
 
-            //Detección de la colisión en el eje X descendente (dirección hacia la izquierda)
-            if (level[baseRow][baseCol - 1]) {
-                //Resolución de la colisión
-                player.restorePreviousPositionX();
-                player.speedX = 0;
+            //Si el jugador agarró el arma, la resolución de la colisión no es frenarlo sino transformarlo
+            if (this.playerGetsWeapon(mapElement))
+            {
+                player.changeToKillerMode();
+            }
+            else
+            {
+                //Detección de la colisión en el eje X descendente (dirección hacia la izquierda)
+                if (mapElement) {
+                    //Resolución de la colisión
+                    player.restorePreviousPositionX();
+                    player.speedX = 0;
+                }
             }
         }
     },
 
-    // Actualiza el estado de todas las entidades
+    playerGetsWeapon: function (mapElement) {
+
+        var getsWeapon = false;
+
+        if (mapElement == this.weaponTileNumber) {
+            getsWeapon = true;
+        }
+
+        return getsWeapon;
+    },
+
+        // Actualiza el estado de todas las entidades
     updateEntities: function (player) {
         player.sprite.update(dt);
 
