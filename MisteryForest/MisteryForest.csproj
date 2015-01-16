@@ -150,6 +150,7 @@
     <Content Include="resources\sprites\hero-sprite-jumping-right.png" />
     <Content Include="resources\sprites\hero-sprite-shooting-right.png" />
     <Content Include="resources\sprites\hero-sprite-walking-grid.png" />
+    <Content Include="resources\sprites\hero-sprite-walking-killer-right.png" />
     <Content Include="resources\sprites\hero-sprite-walking-left.png" />
     <Content Include="resources\sprites\hero-sprite-walking-right.png" />
     <Content Include="resources\sprites\hero-sprite.png" />

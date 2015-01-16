@@ -109,8 +109,8 @@ function update() {
     // Limita la velocidad de la caída en el eje Y
     player.speedY = Math.min(player.speedY, player.maxFallingSpeed);
     
-    //Si está en el piso, anula la secuencia lineal de animación
-    if (player.onTheGround) {
+    //Si está en el piso y no está disparando, anula la secuencia lineal de animación
+    if (player.onTheGround && !player.firing) {
         player.sprite.linearSequence = false;
     }
 

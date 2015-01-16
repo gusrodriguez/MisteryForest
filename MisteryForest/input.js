@@ -65,6 +65,8 @@ document.addEventListener("keydown", function (ev) {
         case 65:
             if (!firePressed)
             {
+                player.firing = true;
+
                 if (player.isFacingRight)
                 {
                     resourceUrl = 'resources/sprites/hero-sprite-shooting-right.png';
@@ -73,13 +75,13 @@ document.addEventListener("keydown", function (ev) {
                 {
                     //resourceUrl = 'resources/sprites/hero-sprite-jumping-left.png';
                 }
-                framesNumberToAnimate = 12;
+                framesNumberToAnimate = 16;
                 player.sprite.animate(true);
                 player.sprite.animateLinearSequence(resourceUrl, framesNumberToAnimate);
-
-                firePressed = true;
-                break;
             }
+            
+            firePressed = true;
+            break;
     }
 }, false);
 
@@ -100,6 +102,7 @@ document.addEventListener("keyup", function (ev) {
             break;
         case 65:
             firePressed = false;
+            player.firing = false;
             break;
     }
 }, false);
@@ -135,9 +138,7 @@ var inputHandler = {
         }
 
         if (jumpPressed) {
-
             player.sprite.animate(true);
-
         }
 
         if (firePressed) {

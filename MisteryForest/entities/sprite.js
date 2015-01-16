@@ -70,7 +70,7 @@
 
                 if (this.counterFramesInLinearSequence < this.framesNumberToAnimateInLinearSequence) {
 
-                    this.draw(x, y);
+                    this.draw(player.size * this.counterFramesInLinearSequence, y);
                 }
                 else
                 {
@@ -97,6 +97,8 @@
         },
         
         animateLinearSequence: function (resourceUrl, framesNumberToAnimate) {
+
+            this.counterFramesInLinearSequence = 0;
 
             this.changeUrl(resourceUrl);
 

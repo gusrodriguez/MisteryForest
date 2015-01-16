@@ -9,6 +9,9 @@ var player = {
 
     //Indica si finalizó el salto
     jumped: false,
+    
+    //Indica si está disparando
+    firing: false,
 
     //Timestamps del último salto, cuando el jugador tocó el suelo
     lastTouch: 0,
