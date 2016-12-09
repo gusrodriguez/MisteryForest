@@ -80,33 +80,27 @@ var scene = {
 
     loadTileset: function (json) {
         this.data = json;
-        this.tileset = $("<img />", { src: json.tilesets[0].image })[0];
+        this.tileset = $("<img />", { src: '../resources/maps/' + json.tilesets[0].image })[0];
         this.tileset.onload = $.proxy(this.renderLayers, this);
-    },
+    }, 
 
     load: function (name) {
         //Si el tileset no se cargó, lo va a buscar al servidor.
-        if (scene.tilesetInfo === undefined)
-        {
-            return $.ajax({
-                url: "/Api/Map",
-                type: "POST"
+        if (scene.tilesetInfo === undefined){
 
-            }).done(function (json) {
+            return $.getJSON('../resources/maps/level1-tilemap.json').done(function (json) {
 
                 scene.tilesetInfo = json;
 
                 $.proxy(this.loadTileset, this);
             });
-        }
-        else
-        {
+        } else {
             //Si el tileset está cacheado, redibuja la escena con la información en memoria
             scene.data = scene.tilesetInfo;
 
             scene.renderLayers(scene.layers);
         }
-    },
+    },   
 
     //Dibuja la escena
     render: function () {
@@ -230,11 +224,11 @@ var scene = {
         return getsWeapon;
     },
 
-        // Actualiza el estado de todas las entidades
+    // Actualiza el estado de todas las entidades
     updateEntities: function (player) {
         player.sprite.update(dt);
 
-        //// Update all the bullets
+        //// TODO: Update all the bullets
         //for(var i=0; i<bullets.length; i++) {
         //    var bullet = bullets[i];
 
@@ -253,7 +247,7 @@ var scene = {
         //    }
         //}
 
-        //// Update all the enemies
+        //// TODO: Update all the enemies
         //for(var i=0; i<enemies.length; i++) {
         //    enemies[i].position[0] -= enemySpeed * dt;
         //    enemies[i].sprite.update(dt);

@@ -33,8 +33,7 @@
 
             var frame;
 
-            if (this.isMoving)
-            {
+            if (this.isMoving) {
                 var max = this.frames.length;
                 var idx = Math.floor(this._index);
                 frame = this.frames[idx % max];
@@ -46,20 +45,16 @@
                     return;
                 }
             }
-            else
-            {
+            else {
                 frame = 0;
             }
 
             var x = this.pos[0];
             var y = this.pos[1];
 
-            if (this.dir == 'vertical')
-            {
+            if (this.dir == 'vertical') {
                 y += frame * this.size[1];
-            }
-            else
-            {
+            } else {
                 x += frame * this.size[0];
             }
             
@@ -71,15 +66,11 @@
                 if (this.counterFramesInLinearSequence < this.framesNumberToAnimateInLinearSequence) {
 
                     this.draw(player.size * this.counterFramesInLinearSequence, y);
-                }
-                else
-                {
+                } else {
                     //Cuando llega al último frame del sprite, lo dibuja en todas las iteraciones y se vé como si quedara fijo
                     this.draw(player.size * this.framesNumberToAnimateInLinearSequence, y);
                 }
-            }
-            else
-            {
+            } else {
                 //dibuja recursivamente
                 this.draw(x, y);
             }

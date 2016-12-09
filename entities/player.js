@@ -134,7 +134,7 @@ var player = {
         }
     },
 
-        //Dibuja al jugador
+    //Dibuja al jugador
     render: function () {
 
         ctx.save();

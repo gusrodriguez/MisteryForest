@@ -9,26 +9,20 @@
     // Lee una imagen desde una url
     function load(urlOrArr) {
 
-        if (urlOrArr instanceof Array)
-        {
+        if (urlOrArr instanceof Array) {
             urlOrArr.forEach(function (url) {
                 loadFromUrlOrCache(url);
             });
-        }
-        else
-        {
+        } else {
             loadFromUrlOrCache(urlOrArr);
         }
     }
 
     function loadFromUrlOrCache(url) {
 
-        if (resourceCache[url])
-        {
+        if (resourceCache[url]) {
             return resourceCache[url];
-        }
-        else
-        {
+        } else {
             var img = new Image();
 
             img.onload = function () {
@@ -53,11 +47,8 @@
 
         var ready = true;
 
-        for (var k in resourceCache)
-        {
-
-            if (resourceCache.hasOwnProperty(k) && !resourceCache[k])
-            {
+        for (var k in resourceCache) {
+            if (resourceCache.hasOwnProperty(k) && !resourceCache[k]) {
                 ready = false;
             }
         }
