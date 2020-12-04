@@ -1,4 +1,4 @@
-# MisteryForest
+# Mistery Forest
 
 ## A Game?
 Well, it's a very primitive wannabe-game engine that includes render, movement, jump and basic collision detection and resolution.
