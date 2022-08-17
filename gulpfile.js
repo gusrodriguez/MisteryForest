@@ -8,6 +8,6 @@ gulp.task('start', function() {
 		}
 	});
 
-	gulp.watch("*.html").on("change", browserSync.reload());	
-	gulp.watch("*.js").on("change", browserSync.reload());
+	// gulp.watch("*.html").on("change", browserSync.reload());	
+	// gulp.watch("*.js").on("change", browserSync.reload());
 });

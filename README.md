@@ -13,8 +13,6 @@ npm install
 
 ## Run te app: 
 ```
-gulp start
+npm start
 ```
-
-Make sure to install gulp in global mode :arrow_right: Sorry about this. It will be fixed :pray:
 

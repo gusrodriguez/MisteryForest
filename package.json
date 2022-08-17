@@ -4,12 +4,13 @@
   "description": "Javascript basic game engine.",
   "main": "app.js",
   "scripts": {
+    "start": "gulp start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Gus Rodriguez",
   "license": "ISC",
   "devDependencies": {
     "browser-sync": "^2.18.2",
-    "gulp": "^3.9.1"
+    "gulp": "^4.0.0"
   }
 }
